@@ -42,7 +42,6 @@ if(empty($title) || empty($email) || empty($content)) {
             <p><?php echo $errorMessage ?></p>
             <a href="index.php">送信画面へ</a>
         <? endif; ?>
-
     </div>
   
 </body>
