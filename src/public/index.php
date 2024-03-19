@@ -30,5 +30,9 @@
         </div>
     </section>
 
+    <div>
+        <a href="login.php">ログインへ</a>
+    </div>
+
 </body>
 </html>

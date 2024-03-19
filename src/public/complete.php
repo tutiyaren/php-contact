@@ -35,7 +35,6 @@ if(empty($title) || empty($email) || empty($content)) {
         <?php if(!(isset($errorMessage))): ?>
             <h1>送信完了！！！</h1>
             <div><a href="index.php">送信画面へ</a></div>
-            <div><a href="history.php">送信履歴を見る</a></div>
         <? endif; ?>
       <!-- 問題がある場合 -->
         <?php if(isset($errorMessage)): ?>

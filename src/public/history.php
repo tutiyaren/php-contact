@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!(isset($_SESSION['id']))) {
+    header('Location: login.php');   
+}
+
 use App\Contacts;
 require '../app/Contacts.php';
 
@@ -10,6 +15,12 @@ $pdo = new PDO(
 
 $displayModel = new Contacts($pdo);
 $display = $displayModel->getContacts();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    session_destroy(); 
+    header('Location: index.php'); 
+    exit();
+}
 
 ?>
 
@@ -36,9 +47,10 @@ $display = $displayModel->getContacts();
         <?php if(empty($display)): ?>
             <p>送信履歴無し</p>
         <?php endif; ?>
-        <!-- 共通 -->
-        <a href="index.php">戻る</a>
     </div>
+    <form action="" method="post">
+        <button type="submit">ログアウト</button>
+    </form>
   
 </body>
 </html>
