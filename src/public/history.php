@@ -16,10 +16,16 @@ $pdo = new PDO(
 $displayModel = new Contacts($pdo);
 $display = $displayModel->getContacts();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    session_destroy(); 
-    header('Location: index.php'); 
-    exit();
+if(isset($_POST['csv']) && (isset($_POST['date_id']))) {
+    $date_id = $_POST['date_id'];
+    $date = $displayModel->getDateById($date_id); 
+        
+    $csv = fopen('../csv/file.csv', 'a');
+    if ($csv && $date) { 
+        $fields = array($date['title'], $date['content']);
+        fputcsv($csv, $fields);
+        fclose($csv);
+    }
 }
 
 ?>
@@ -40,6 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php foreach($display as $date): ?>
             <div><?php echo $date['title'] ?></div>
             <div><?php echo $date['content'] ?></div>
+            <form action="history.php" method="post">
+                <input type="hidden" name="date_id" value="<?php echo $date['id']; ?>">
+                <button type="submit" name="csv">CSV出力</button>
+            </form>
             <div>----------------------------------------</div>
         <? endforeach; ?>
         <?php endif; ?>
@@ -48,9 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p>送信履歴無し</p>
         <?php endif; ?>
     </div>
-    <form action="" method="post">
-        <button type="submit">ログアウト</button>
-    </form>
   
 </body>
 </html>

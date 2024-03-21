@@ -6,6 +6,7 @@ interface ContactInterface
 {
     public function getContacts(): array; 
     public function addContacts(string $title, string $email, string $content): void;
+    public function getDateById($date_id);
 }
 
 abstract class AbstractContacts implements ContactInterface
@@ -39,5 +40,12 @@ class Contacts extends AbstractContacts
         $stmt->bindParam(":created_at", $created_at);
         $stmt->bindParam(":updated_at", $updated_at);
         $stmt->execute();
+    }
+
+    public function getDateById($date_id) {
+        $stmt = $this->pdo->prepare("SELECT * FROM contacts WHERE id = :date_id");
+        $stmt->execute(['date_id' => $date_id]);
+        $date = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $date;
     }
 }
