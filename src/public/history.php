@@ -5,7 +5,9 @@ if (!(isset($_SESSION['id']))) {
 }
 
 use App\Contacts;
+use App\Favorites;
 require '../app/Contacts.php';
+require '../app/Favorites.php';
 
 $pdo = new PDO(
     'mysql:host=mysql;dbname=contactform',
@@ -16,9 +18,23 @@ $pdo = new PDO(
 $displayModel = new Contacts($pdo);
 $display = $displayModel->getContacts();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    session_destroy(); 
-    header('Location: index.php'); 
+$favoritesModel = new Favorites($pdo);
+
+$user_id = $_SESSION['id'];
+
+if(isset($_POST['contact_id'])) {
+    $contact_id = $_POST['contact_id'];
+
+    $is_favorite = $favoritesModel->check_favorite($user_id, $contact_id);
+
+    if ($is_favorite) {
+        $favoritesModel->delete_favorite($user_id, $contact_id);
+    } 
+    if (!($is_favorite)) {
+        $favoritesModel->add_favorite($user_id, $contact_id);
+    }
+
+    header('Location: history.php'); 
     exit();
 }
 
@@ -40,6 +56,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php foreach($display as $date): ?>
             <div><?php echo $date['title'] ?></div>
             <div><?php echo $date['content'] ?></div>
+            <form action="history.php" method="post">
+                <input type="hidden" name="contact_id" value="<?php echo $date['id']; ?>">
+                <button type="submit" name="favorite">
+                    <?php $is_favorite = $favoritesModel->check_favorite($_SESSION['id'], $date['id']) ?>
+                    <?php if (!$is_favorite): ?>
+                    いいね
+                    <?php endif; ?>
+                    <?php if ($is_favorite): ?>
+                    いいね解除
+                    <?php endif; ?>
+                </button>
+            </form>
             <div>----------------------------------------</div>
         <? endforeach; ?>
         <?php endif; ?>
@@ -48,9 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p>送信履歴無し</p>
         <?php endif; ?>
     </div>
-    <form action="" method="post">
-        <button type="submit">ログアウト</button>
-    </form>
+    <div>
+        <a href="favorite.php">ブックマーク一覧へ</a>
+    </div>
   
 </body>
 </html>
